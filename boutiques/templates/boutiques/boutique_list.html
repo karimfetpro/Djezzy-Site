@@ -1,0 +1,36 @@
+{% extends 'comptes/base.html' %}
+
+{% block title %}Mes boutiques{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Mes boutiques</h1>
+        <a href="{% url 'add' %}" class="btn btn-primary">+ Ajouter une boutique</a>
+    </div>
+
+    {% if boutiques %}
+        <div class="list-group">
+            {% for boutique in boutiques %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ boutique.name }}</strong><br>
+                        <small class="text-muted">
+                            {{ boutique.address }}
+                            {% if boutique.commune %} — {{ boutique.commune }}{% endif %}
+                            {% if boutique.phone %} · {{ boutique.phone }}{% endif %}
+                        </small>
+                    </div>
+                    <form method="post" action="{% url 'delete' %}" class="m-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="boutique_id" value="{{ boutique.id }}">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-secondary">
+            Aucune boutique pour le moment. <a href="{% url 'add' %}">Ajoute ta première boutique</a>.
+        </div>
+    {% endif %}
+{% endblock %}

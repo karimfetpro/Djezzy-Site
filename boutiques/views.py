@@ -15,7 +15,7 @@ def boutique_create(request):
             boutique.client = request.user.client_profile
             boutique.save()
             messages.success(request, "Boutique ajoutée avec succès.")
-            return redirect('boutique_list.html')
+            return redirect('boutique_list')
     else:
         form = BoutiqueForm()
 
@@ -36,4 +36,4 @@ def boutique_delete(request):
             messages.success(request, "Boutique supprimée avec succès.")
         except Boutique.DoesNotExist:
             messages.error(request, "Boutique introuvable.")
-    return redirect('boutique_list.html')
+    return redirect('boutique_list')
