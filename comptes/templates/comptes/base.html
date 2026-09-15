@@ -15,16 +15,24 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Accueil</a></li>
                 {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'boutique_list' %}">Mes boutiques</a></li>
                     <li class="nav-item"><span class="nav-link">Bonjour, {{ user.username }}</span></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Déconnexion</a></li>
                 {% else %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Connexion</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Inscription</a></li>
                 {% endif %}
             </ul>
         </div>
     </nav>
 
     <div class="container mt-5">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
         {% block content %}
         {% endblock %}
     </div>
