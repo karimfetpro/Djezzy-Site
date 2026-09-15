@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'comptes.apps.ComptesConfig',
     'shared.apps.SharedConfig',
+    'boutiques.apps.BoutiquesConfig',
 ]
 
 MIDDLEWARE = [
@@ -129,3 +130,5 @@ MAILERS = {
 }
 
 STATIC_URL = 'static/'
+
+LOGIN_URL = 'login'

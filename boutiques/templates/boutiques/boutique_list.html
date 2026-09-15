@@ -1,0 +1,32 @@
+{% extends 'comptes/base.html' %}
+
+{% block title %}Mes boutiques{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Mes boutiques</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-info">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <a href="{% url 'add' %}" class="btn btn-primary mb-3">Ajouter une boutique</a>
+
+    {% if boutiques %}
+        <ul class="list-group">
+            {% for boutique in boutiques %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ boutique.name }} — {{ boutique.commune }}</span>
+                    <form method="post" action="{% url 'delete' %}" class="m-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="boutique_id" value="{{ boutique.id }}">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">Aucune boutique pour le moment.</p>
+    {% endif %}
+{% endblock %}

@@ -3,6 +3,7 @@ from django.contrib.auth import  login
 from .forms import ClientRegisterForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 
 def home (request):
@@ -18,7 +19,6 @@ def register_views(request):
             return redirect('home')  
     else:
         form = ClientRegisterForm()
-
     return render(request, 'comptes/register.html', {'form': form})
 
 def login_views(request):
@@ -43,3 +43,8 @@ def login_views(request):
         form = AuthenticationForm()
 
     return render(request, 'comptes/login.html', {'form': form, 'next': next_url})
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('home')

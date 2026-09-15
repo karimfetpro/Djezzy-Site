@@ -1,3 +1,4 @@
 from django.contrib import admin
+from boutiques.models import Boutique
 
-# Register your models here.
+admin.site.register(Boutique)

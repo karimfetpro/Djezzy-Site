@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Djezzy Site{% endblock %}</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'bootstrap_min.css' %}">
+    <link rel="stylesheet" href="{% static 'shared/bootsratp/bootstrap.min.css' %}">
 </head>
 <body>
 
@@ -14,7 +14,12 @@
             <a class="navbar-brand" href="{% url 'home' %}">Djezzy Site</a>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Accueil</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Connexion</a></li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item"><span class="nav-link">Bonjour, {{ user.username }}</span></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Déconnexion</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Connexion</a></li>
+                {% endif %}
             </ul>
         </div>
     </nav>
@@ -24,6 +29,6 @@
         {% endblock %}
     </div>
 
-    <script src="{% static 'bootstrap_bundle_min.js' %}"></script>
+    <script src="{% static 'shared/bootsratp/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>
