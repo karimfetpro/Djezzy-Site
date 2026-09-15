@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'comptes.apps.ComptesConfig',
     'shared.apps.SharedConfig',
     'boutiques.apps.BoutiquesConfig',
+    'catalogue.apps.CatalogueConfig',
 ]
 
 MIDDLEWARE = [
