@@ -1,0 +1,9 @@
+{% extends 'comptes/base.html' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+    <h1>Bienvenue sur Djezzy Site</h1>
+    <p class="text-muted">Ceci est la page d'accueil de test.</p>
+    <a href="{% url 'login' %}" class="btn btn-primary">Aller au formulaire</a>
+{% endblock %}
