@@ -23,8 +23,13 @@
                     {% if categorie.offers.all %}
                         {% for offer in categorie.offers.all %}
                             <div class="border rounded p-3 mb-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span><strong>{{ offer.name }}</strong> — {{ offer.description|default:"Pas de description" }}</span>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="d-flex gap-3">
+                                        {% if offer.image %}
+                                            <img src="{{ offer.image.url }}" alt="{{ offer.name }}" style="width: 60px; height: 60px; object-fit: cover;" class="rounded">
+                                        {% endif %}
+                                        <span><strong>{{ offer.name }}</strong> — {{ offer.description|default:"Pas de description" }}</span>
+                                    </div>
                                     <div>
                                         <a href="{% url 'suboffer_create' %}" class="btn btn-sm btn-outline-primary">+ Sous-offre</a>
                                         <a href="{% url 'offer_update' offer.pk %}" class="btn btn-sm btn-outline-secondary">Modifier</a>
@@ -36,7 +41,12 @@
                                     <ul class="list-group mt-3">
                                         {% for sub in offer.sub_offers.all %}
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>{{ sub.name }} — {{ sub.price }} DA</span>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    {% if sub.image %}
+                                                        <img src="{{ sub.image.url }}" alt="{{ sub.name }}" style="width: 40px; height: 40px; object-fit: cover;" class="rounded">
+                                                    {% endif %}
+                                                    <span>{{ sub.name }} — {{ sub.price }} DA</span>
+                                                </div>
                                                 <div>
                                                     <a href="{% url 'suboffer_update' sub.pk %}" class="btn btn-sm btn-outline-secondary">Modifier</a>
                                                     <a href="{% url 'suboffer_delete' sub.pk %}" class="btn btn-sm btn-outline-danger">Supprimer</a>

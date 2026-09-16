@@ -14,7 +14,7 @@ def _commercial_or_404(request):
 def catalog_manage(request):
     _commercial_or_404(request)
     categories = Categories.objects.prefetch_related('offers__sub_offers').all()
-    return render(request, 'commercial/catalog_manage.html', {'categories': categories})
+    return render(request, 'catalogue/catalog_manage.html', {'categories': categories})
 
 @login_required
 def categorie_create(request):
@@ -27,7 +27,7 @@ def categorie_create(request):
             return redirect('catalog_manage')
     else:
         form = CategorieForm()
-    return render(request, 'commercial/categorie_form.html', {'form': form})
+    return render(request, 'catalogue/categorie_form.html', {'form': form})
 
 @login_required
 def categorie_update(request, pk):
@@ -41,7 +41,7 @@ def categorie_update(request, pk):
             return redirect('catalog_manage')
     else:
         form = CategorieForm(instance=categorie)
-    return render(request, 'commercial/categorie_form.html', {'form': form, 'categorie': categorie})
+    return render(request, 'catalogue/categorie_form.html', {'form': form, 'categorie': categorie})
 
 @login_required
 def categorie_delete(request, pk):
@@ -51,7 +51,7 @@ def categorie_delete(request, pk):
         categorie.delete()
         messages.success(request, "Catégorie supprimée.")
         return redirect('catalog_manage')
-    return render(request, 'commercial/catalog_confirm_delete.html', {
+    return render(request, 'catalogue/catalog_confirm_delete.html', {
         'object_name': categorie.type,
         'warning': "Toutes les offres et sous-offres de cette catégorie seront également supprimées.",
     })
@@ -67,7 +67,7 @@ def offer_create(request):
             return redirect('catalog_manage')
     else:
         form = OfferForm()
-    return render(request, 'commercial/offer_form.html', {'form': form})
+    return render(request, 'catalogue/offer_form.html', {'form': form})
 
 @login_required
 def offer_update(request, pk):
@@ -81,7 +81,7 @@ def offer_update(request, pk):
             return redirect('catalog_manage')
     else:
         form = OfferForm(instance=offer)
-    return render(request, 'commercial/offer_form.html', {'form': form, 'offer': offer})
+    return render(request, 'catalogue/offer_form.html', {'form': form, 'offer': offer})
 
 @login_required
 def offer_delete(request, pk):
@@ -91,7 +91,7 @@ def offer_delete(request, pk):
         offer.delete()
         messages.success(request, "Offre supprimée.")
         return redirect('catalog_manage')
-    return render(request, 'commercial/catalog_confirm_delete.html', {
+    return render(request, 'catalogue/catalog_confirm_delete.html', {
         'object_name': offer.name,
         'warning': "Toutes les sous-offres de cette offre seront également supprimées.",
     })
@@ -107,7 +107,7 @@ def suboffer_create(request):
             return redirect('catalog_manage')
     else:
         form = SubOfferForm()
-    return render(request, 'commercial/suboffer_form.html', {'form': form})
+    return render(request, 'catalogue/suboffer_form.html', {'form': form})
 
 @login_required
 def suboffer_update(request, pk):
@@ -121,7 +121,7 @@ def suboffer_update(request, pk):
             return redirect('catalog_manage')
     else:
         form = SubOfferForm(instance=sub_offer)
-    return render(request, 'commercial/suboffer_form.html', {'form': form, 'sub_offer': sub_offer})
+    return render(request, 'catalogue/suboffer_form.html', {'form': form, 'sub_offer': sub_offer})
 
 @login_required
 def suboffer_delete(request, pk):
@@ -131,6 +131,6 @@ def suboffer_delete(request, pk):
         sub_offer.delete()
         messages.success(request, "Sous-offre supprimée.")
         return redirect('catalog_manage')
-    return render(request, 'commercial/catalog_confirm_delete.html', {
+    return render(request, 'catalogue/catalog_confirm_delete.html', {
         'object_name': sub_offer.name,
     })
