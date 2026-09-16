@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'shared.apps.SharedConfig',
     'boutiques.apps.BoutiquesConfig',
     'catalogue.apps.CatalogueConfig',
-    'quota.apps.QuotaConfig',
 ]
 
 MIDDLEWARE = [
