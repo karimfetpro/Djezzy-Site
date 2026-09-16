@@ -16,7 +16,9 @@
                 <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Accueil</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'catalog_view' %}">Offres</a></li>
                 {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'boutique_list' %}">Mes boutiques</a></li>
+                    {% if user.client_profile %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'boutique_list' %}">Mes boutiques</a></li>
+                    {% endif %}
                     {% if user.commercial_profile %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'catalog_manage' %}">Catalogue</a></li>
                     {% endif %}
