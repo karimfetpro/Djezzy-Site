@@ -1,0 +1,61 @@
+{% extends 'comptes/base.html' %}
+
+{% block title %}Gestion du catalogue{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Catalogue</h1>
+        <a href="{% url 'categorie_create' %}" class="btn btn-primary">+ Nouvelle catégorie</a>
+    </div>
+
+    {% if categories %}
+        {% for categorie in categories %}
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>{{ categorie.type }}</strong>
+                    <div>
+                        <a href="{% url 'offer_create' %}" class="btn btn-sm btn-outline-primary">+ Offre</a>
+                        <a href="{% url 'categorie_update' categorie.pk %}" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                        <a href="{% url 'categorie_delete' categorie.pk %}" class="btn btn-sm btn-outline-danger">Supprimer</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if categorie.offers.all %}
+                        {% for offer in categorie.offers.all %}
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span><strong>{{ offer.name }}</strong> — {{ offer.description|default:"Pas de description" }}</span>
+                                    <div>
+                                        <a href="{% url 'suboffer_create' %}" class="btn btn-sm btn-outline-primary">+ Sous-offre</a>
+                                        <a href="{% url 'offer_update' offer.pk %}" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                                        <a href="{% url 'offer_delete' offer.pk %}" class="btn btn-sm btn-outline-danger">Supprimer</a>
+                                    </div>
+                                </div>
+
+                                {% if offer.sub_offers.all %}
+                                    <ul class="list-group mt-3">
+                                        {% for sub in offer.sub_offers.all %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>{{ sub.name }} — {{ sub.price }} DA</span>
+                                                <div>
+                                                    <a href="{% url 'suboffer_update' sub.pk %}" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                                                    <a href="{% url 'suboffer_delete' sub.pk %}" class="btn btn-sm btn-outline-danger">Supprimer</a>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="text-muted mb-0 mt-2">Aucune sous-offre.</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted mb-0">Aucune offre dans cette catégorie.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-secondary">Aucune catégorie pour le moment.</div>
+    {% endif %}
+{% endblock %}

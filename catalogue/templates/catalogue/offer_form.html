@@ -1,0 +1,19 @@
+{% extends 'comptes/base.html' %}
+
+{% block title %}{% if offer %}Modifier{% else %}Ajouter{% endif %} une offre{% endblock %}
+
+{% block content %}
+    <div class="mx-auto" style="max-width: 500px;">
+        <h1 class="mb-4">{% if offer %}Modifier{% else %}Ajouter{% endif %} une offre</h1>
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <a href="{% url 'catalog_manage' %}" class="btn btn-outline-secondary">Annuler</a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

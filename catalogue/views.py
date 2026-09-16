@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from catalogue.forms import CategorieForm, OfferForm, SubOfferForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
