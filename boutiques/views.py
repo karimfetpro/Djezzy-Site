@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.shortcuts import render, redirect
 
 from boutiques.models import Boutique
@@ -25,6 +25,20 @@ def boutique_create(request):
 def boutique_list(request):
     boutiques = request.user.client_profile.boutique_set.all()
     return render(request, 'boutiques/boutique_list.html', {'boutiques': boutiques})
+
+@login_required
+def boutique_update(request, pk):
+    boutique = get_object_or_404(Boutique, pk=pk, client=request.user.client_profile)
+    if request.method == 'POST':
+        form = BoutiqueForm(request.POST, instance=boutique)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Boutique modifiée avec succès.")
+            return redirect('boutique_list')
+    else:
+        form = BoutiqueForm(instance=boutique)
+
+    return render(request, 'boutiques/boutique.html', {'form': form, 'boutique': boutique})
 
 @login_required
 def boutique_delete(request):

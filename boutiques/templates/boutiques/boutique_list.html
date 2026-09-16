@@ -16,15 +16,17 @@
                         <strong>{{ boutique.name }}</strong><br>
                         <small class="text-muted">
                             {{ boutique.address }}
-                            {% if boutique.commune %} — {{ boutique.commune }}{% endif %}
                             {% if boutique.phone %} · {{ boutique.phone }}{% endif %}
                         </small>
                     </div>
-                    <form method="post" action="{% url 'delete' %}" class="m-0">
-                        {% csrf_token %}
-                        <input type="hidden" name="boutique_id" value="{{ boutique.id }}">
-                        <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
-                    </form>
+                    <div>
+                        <a href="{% url 'boutique_update' boutique.pk %}" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                        <form method="post" action="{% url 'delete' %}" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="boutique_id" value="{{ boutique.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                        </form>
+                    </div>
                 </div>
             {% endfor %}
         </div>
