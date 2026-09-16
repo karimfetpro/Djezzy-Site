@@ -51,3 +51,23 @@ def boutique_delete(request):
         except Boutique.DoesNotExist:
             messages.error(request, "Boutique introuvable.")
     return redirect('boutique_list')
+
+@login_required
+def accept_boutique(request , pk):
+    if request.user.role == 'commercial':
+        boutique = get_object_or_404(Boutique, pk=pk)
+        boutique.statut = 'Acceptée'
+        boutique.save()
+    else:
+        messages.error(request, "Vous n'avez pas la permission de réaliser cette action.")
+    return redirect('boutique_list')
+
+@login_required
+def refuse_boutique(request , pk):
+    if request.user.role == 'commercial':
+        boutique = get_object_or_404(Boutique, pk=pk)
+        boutique.statut = 'Refusée'
+        boutique.save()
+    else:
+        messages.error(request, "Vous n'avez pas la permission de réaliser cette action.")
+    return redirect('boutique_list')

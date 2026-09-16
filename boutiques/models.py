@@ -14,3 +14,5 @@ class Boutique(models.Model):
     commune = models.CharField(max_length=100, blank=True, null=True)
     phone = models.CharField(max_length=15, validators=[phone_validator], blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    statut =models.CharField(max_length=20, choices=[('En attente', 'En attente'), ('Acceptée', 'Acceptée'), ('Refuseé', 'Refuseé')], default='En attente')
