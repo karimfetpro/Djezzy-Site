@@ -19,7 +19,7 @@ class Clients(models.Model):
     
     
 class Commercials(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='commercial_profile', blank = True, default = 1)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='commercial_profile', blank = True)
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
     email = models.EmailField(unique=True, blank=False, null=True)
