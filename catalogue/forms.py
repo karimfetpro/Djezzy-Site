@@ -25,11 +25,12 @@ class OfferForm(forms.ModelForm):
 class SubOfferForm(forms.ModelForm):
     class Meta:
         model = SubOffers
-        fields = ['offer', 'name', 'price', 'image', 'features']
+        fields = ['offer', 'name', 'price', 'image', 'features', 'quota']
         labels = {
             'offer': "Offre",
             'name': "Nom de la sous-offre",
             'price': "Prix (DA)",
             'image': "Image",
             'features': "Détails (JSON)",
+            'quota': "Quota (commandes max)",
         }

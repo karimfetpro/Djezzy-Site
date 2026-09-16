@@ -45,7 +45,16 @@
                                                     {% if sub.image %}
                                                         <img src="{{ sub.image.url }}" alt="{{ sub.name }}" style="width: 40px; height: 40px; object-fit: cover;" class="rounded">
                                                     {% endif %}
-                                                    <span>{{ sub.name }} — {{ sub.price }} DA</span>
+                                                    <div>
+                                                        <span>{{ sub.name }} — {{ sub.price }} DA</span><br>
+                                                        <small class="text-muted">
+                                                            {% if sub.quota_atteint %}
+                                                                <span class="badge bg-danger">Quota atteint</span>
+                                                            {% else %}
+                                                                {{ sub.commandes_effectuees }}/{{ sub.quota }} commandes
+                                                            {% endif %}
+                                                        </small>
+                                                    </div>
                                                 </div>
                                                 <div>
                                                     <a href="{% url 'suboffer_update' sub.pk %}" class="btn btn-sm btn-outline-secondary">Modifier</a>
