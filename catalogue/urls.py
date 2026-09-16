@@ -3,6 +3,9 @@ from . import views
 
 urlpatterns = [
     path('', views.catalog_manage, name='catalog_manage'),
+    
+    path('offres/', views.catalog_view, name='catalog_view'),
+    path('offres/<int:pk>/', views.offer_detail, name='offer_detail'),
 
     path('categorie/create/', views.categorie_create, name='categorie_create'),
     path('categorie/<int:pk>/update/', views.categorie_update, name='categorie_update'),

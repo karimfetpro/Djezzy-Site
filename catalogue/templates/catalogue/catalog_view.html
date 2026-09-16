@@ -1,0 +1,38 @@
+{% extends 'comptes/base.html' %}
+
+{% block title %}Nos offres{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Nos offres</h1>
+
+    {% if categories %}
+        {% for categorie in categories %}
+            <div class="mb-5">
+                <h3 class="mb-3">{{ categorie.type }}</h3>
+
+                {% if categorie.offers.all %}
+                    <div class="row g-4">
+                        {% for offer in categorie.offers.all %}
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    {% if offer.image %}
+                                        <img src="{{ offer.image.url }}" class="card-img-top" alt="{{ offer.name }}" style="height: 180px; object-fit: cover;">
+                                    {% endif %}
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">{{ offer.name }}</h5>
+                                        <p class="card-text text-muted">{{ offer.description|default:"" }}</p>
+                                        <a href="{% url 'offer_detail' offer.pk %}" class="btn btn-primary mt-auto">Voir les formules</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Aucune offre disponible pour le moment.</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-secondary">Aucune offre disponible pour le moment.</div>
+    {% endif %}
+{% endblock %}

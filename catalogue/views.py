@@ -6,6 +6,15 @@ from catalogue.models import Categories, Offers, SubOffers
 from catalogue.forms import CategorieForm, OfferForm, SubOfferForm
 from comptes.models import Commercials
 
+def catalog_view(request):
+    categories = Categories.objects.prefetch_related('offers__sub_offers').all()
+    return render(request, 'catalogue/catalog_view.html', {'categories': categories})
+
+
+def offer_detail(request, pk):
+    offer = get_object_or_404(Offers, pk=pk)
+    return render(request, 'catalogue/offer_detail.html', {'offer': offer})
+
 
 def _commercial_or_404(request):
     return get_object_or_404(Commercials, user=request.user)
