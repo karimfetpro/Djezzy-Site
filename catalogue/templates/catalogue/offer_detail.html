@@ -39,7 +39,7 @@
                                 </ul>
                             {% endif %}
 
-                            <button class="btn btn-outline-primary mt-auto" disabled>Commander (bientôt)</button>
+                            {% if user.is_authenticated %} <a href="{% url 'order_create' sub.pk %}" class="btn btn-primary mt-auto">Commander</a> {% else %} <a href="{% url 'login' %}?next={% url 'offer_detail' offer.pk %}" class="btn btn-outline-primary mt-auto">Se connecter pour commander</a> {% endif %}
                         </div>
                     </div>
                 </div>

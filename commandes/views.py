@@ -6,10 +6,12 @@ from commandes.models import Order, OrderItem
 from boutiques.models import Boutique
 from catalogue.models import SubOffers
 
+
 @login_required
 def order_list(request):
     orders = request.user.client_profile.orders.prefetch_related('items__sub_offer')
-    return render(request, 'client/order_list.html', {'orders': orders})
+    return render(request, 'commandes/order_list.html', {'orders': orders})
+
 
 @login_required
 def order_detail(request, pk):
@@ -18,7 +20,8 @@ def order_detail(request, pk):
         pk=pk,
         client=request.user.client_profile,
     )
-    return render(request, 'client/order_detail.html', {'order': order})
+    return render(request, 'commandes/order_detail.html', {'order': order})
+
 
 @login_required
 def order_cancel(request, pk):
@@ -31,7 +34,8 @@ def order_cancel(request, pk):
             messages.error(request, "Cette commande ne peut plus être annulée.")
         return redirect('order_detail', pk=order.pk)
 
-    return render(request, 'client/order_confirm_cancel.html', {'order': order})
+    return render(request, 'commandes/order_confirm_cancel.html', {'order': order})
+
 
 @login_required
 def order_create(request, sub_offer_pk):
@@ -59,7 +63,7 @@ def order_create(request, sub_offer_pk):
         messages.success(request, "Commande créée avec succès.")
         return redirect('order_detail', pk=order.pk)
 
-    return render(request, 'client/order_create.html', {
+    return render(request, 'commandes/order_create.html', {
         'sub_offer': sub_offer,
         'boutiques': boutiques,
     })
