@@ -55,19 +55,3 @@ class OrderItem(models.Model):
         if not self.unit_price:
             self.unit_price = self.sub_offer.price
         super().save(*args, **kwargs)
-        
-def try_confirm_order(order):
-    if order.status != Order.Status.PENDING:
-        return order.status == Order.Status.CONFIRMED
-
-    items = order.items.all()
-
-    if all(item.sub_offer.quota_restant() >= item.quantity for item in items):
-        for item in items:
-            item.sub_offer.commandes_effectuees += item.quantity
-            item.sub_offer.save()
-        order.status = Order.Status.CONFIRMED
-        order.save()
-        return True
-
-    return False

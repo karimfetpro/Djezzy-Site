@@ -1,0 +1,86 @@
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mon panier</title>
+</head>
+
+<body>
+
+    <h1>Mon panier</h1>
+
+    {% if items %}
+
+        {% for item in items %}
+
+            <div>
+                <h3>{{ item.sub_offer.name }}</h3>
+
+                <p>
+                    Prix : {{ item.sub_offer.price }} DA
+                </p>
+
+                <p>
+                    Quantité : {{ item.quantity }}
+                </p>
+
+                <p>
+                    Sous-total : {{ item.subtotal }} DA
+                </p>
+
+                <a href="{% url 'cart_remove' item.sub_offer.id %}">
+                    Supprimer
+                </a>
+            </div>
+
+            <hr>
+
+        {% endfor %}
+
+        <h2>
+            Total : {{ total }} DA
+        </h2>
+
+
+        <h3>Choisir une boutique</h3>
+
+        <form method="POST" action="{% url 'cart_confirm' %}">
+
+            {% csrf_token %}
+
+            <select name="boutique_id">
+
+                {% for boutique in boutiques %}
+
+                    <option value="{{ boutique.id }}">
+                        {{ boutique.name }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+            <br><br>
+
+            <button type="submit">
+                Confirmer la commande
+            </button>
+
+        </form>
+
+    {% else %}
+
+        <p>Votre panier est vide.</p>
+
+    {% endif %}
+
+
+    <br>
+
+    <a href="/">
+        Retour à l'accueil
+    </a>
+
+</body>
+</html>
+```
