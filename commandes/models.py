@@ -24,7 +24,7 @@ class Order(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Commande #{self.pk} — {self.client.name} ({self.get_status_display()})"
+       return f"Commande #{self.pk} — {self.client.prenom} {self.client.nom} ({self.get_status_display()})"
     
     def total(self):
         return sum(item.subtotal() for item in self.items.all())

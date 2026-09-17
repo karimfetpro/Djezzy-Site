@@ -1,0 +1,30 @@
+{% extends 'comptes/base.html' %}
+
+{% block title %}Commander {{ sub_offer.name }}{% endblock %}
+
+{% block content %}
+    <div class="mx-auto" style="max-width: 500px;">
+        <h1 class="mb-4">Commander {{ sub_offer.name }}</h1>
+        <p class="text-muted">{{ sub_offer.price }} DA / unité</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Boutique</label>
+                <select name="boutique" class="form-select" required>
+                    {% for boutique in boutiques %}
+                        <option value="{{ boutique.pk }}">{{ boutique.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Quantité</label>
+                <input type="number" name="quantity" class="form-control" value="1" min="1" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Valider la commande</button>
+        </form>
+    </div>
+{% endblock %}
