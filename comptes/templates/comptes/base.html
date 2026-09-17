@@ -18,6 +18,7 @@
                 {% if user.is_authenticated %}
                     {% if user.client_profile %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'boutique_list' %}">Mes boutiques</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'order_list' %}">Mes commandes</a></li>
                     {% endif %}
                     {% if user.commercial_profile %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'catalog_manage' %}">Catalogue</a></li>
