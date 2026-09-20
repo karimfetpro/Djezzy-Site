@@ -19,9 +19,13 @@
                     {% if user.client_profile %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'boutique_list' %}">Mes boutiques</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'order_list' %}">Mes commandes</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'cart_detail' %}">Panier</a></li>
+  
                     {% endif %}
                     {% if user.commercial_profile %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'catalog_manage' %}">Catalogue</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'boutique_pending_list' %}">Boutiques en attente</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'cart_pending_list' %}">Commandes en attente</a></li>
                     {% endif %}
                     <li class="nav-item"><span class="nav-link">Bonjour, {{ user.username }}</span></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Déconnexion</a></li>
