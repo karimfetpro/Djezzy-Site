@@ -13,7 +13,15 @@
             {% for boutique in boutiques %}
                 <div class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
-                        <strong>{{ boutique.name }}</strong><br>
+                        <strong>{{ boutique.name }}</strong>
+                        {% if boutique.statut == 'en_attente' %}
+                            <span class="badge bg-warning text-dark">En attente</span>
+                        {% elif boutique.statut == 'acceptee' %}
+                            <span class="badge bg-success">Acceptée</span>
+                        {% elif boutique.statut == 'refusee' %}
+                            <span class="badge bg-danger">Refusée</span>
+                        {% endif %}
+                        <br>
                         <small class="text-muted">
                             {{ boutique.address }}
                             {% if boutique.phone %} · {{ boutique.phone }}{% endif %}

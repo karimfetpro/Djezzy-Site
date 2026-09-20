@@ -1,0 +1,32 @@
+{% extends 'comptes/base.html' %}
+
+{% block title %}Boutiques en attente{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Boutiques en attente de validation</h1>
+
+    {% if boutiques %}
+        <div class="list-group">
+            {% for boutique in boutiques %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ boutique.name }}</strong> — {{ boutique.client.prenom }} {{ boutique.client.nom }}<br>
+                        <small class="text-muted">{{ boutique.address }}</small>
+                    </div>
+                    <div>
+                        <form method="post" action="{% url 'accept_boutique' boutique.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-success">Accepter</button>
+                        </form>
+                        <form method="post" action="{% url 'refuse_boutique' boutique.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Refuser</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-secondary">Aucune boutique en attente.</div>
+    {% endif %}
+{% endblock %}

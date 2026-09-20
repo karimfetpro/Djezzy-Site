@@ -1,10 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 
 from boutiques.models import Boutique
 from boutiques.forms import BoutiqueForm
+from comptes.models import Commercials
 
 @login_required
 def boutique_create(request):
@@ -13,6 +13,7 @@ def boutique_create(request):
         if form.is_valid():
             boutique = form.save(commit=False)
             boutique.client = request.user.client_profile
+            boutique.statut = 'en_attente'
             boutique.save()
             messages.success(request, "Boutique ajoutée avec succès.")
             return redirect('boutique_list')
@@ -53,21 +54,34 @@ def boutique_delete(request):
     return redirect('boutique_list')
 
 @login_required
-def accept_boutique(request , pk):
-    if request.user.role == 'commercial':
-        boutique = get_object_or_404(Boutique, pk=pk)
-        boutique.statut = 'Acceptée'
-        boutique.save()
-    else:
-        messages.error(request, "Vous n'avez pas la permission de réaliser cette action.")
-    return redirect('boutique_list')
+def boutique_pending_list(request):
+    commercial = Commercials.objects.filter(user=request.user).first()
+    if not commercial:
+        messages.error(request, "Vous n'avez pas la permission d'accéder à cette page.")
+        return redirect('home')
+    boutiques = Boutique.objects.filter(statut='en_attente')
+    return render(request, 'boutiques/boutique_pending_list.html', {'boutiques': boutiques})
 
 @login_required
-def refuse_boutique(request , pk):
-    if request.user.role == 'commercial':
+def accept_boutique(request, pk):
+    commercial = Commercials.objects.filter(user=request.user).first()
+    if commercial:
         boutique = get_object_or_404(Boutique, pk=pk)
-        boutique.statut = 'Refusée'
+        boutique.statut = 'acceptee'
         boutique.save()
+        messages.success(request, f"Boutique « {boutique.name} » acceptée.")
     else:
         messages.error(request, "Vous n'avez pas la permission de réaliser cette action.")
-    return redirect('boutique_list')
+    return redirect('boutique_pending_list')
+
+@login_required
+def refuse_boutique(request, pk):
+    commercial = Commercials.objects.filter(user=request.user).first()
+    if commercial:
+        boutique = get_object_or_404(Boutique, pk=pk)
+        boutique.statut = 'refusee'
+        boutique.save()
+        messages.success(request, f"Boutique « {boutique.name} » refusée.")
+    else:
+        messages.error(request, "Vous n'avez pas la permission de réaliser cette action.")
+    return redirect('boutique_pending_list')
