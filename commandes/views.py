@@ -131,6 +131,22 @@ def cart_pending_list(request):
     return render(request, 'commandes/cart_pending_list.html', {'orders': orders})
 
 @login_required
+def cart_set_quantity(request, sub_offer_id):
+    if request.method == 'POST':
+        cart = _get_cart(request)
+        key = str(sub_offer_id)
+        quantity = int(request.POST.get('quantity', 1))
+
+        if quantity <= 0:
+            if key in cart:
+                del cart[key]
+        else:
+            cart[key] = quantity
+
+        request.session.modified = True
+    return redirect("cart_detail")
+
+@login_required
 def accept_cart(request, pk):
     commercial = Commercials.objects.filter(user=request.user).first()
     if not commercial:

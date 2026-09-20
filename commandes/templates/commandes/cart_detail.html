@@ -21,11 +21,11 @@
                         <tr>
                             <td>{{ entry.sub_offer.name }}</td>
                             <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <a href="{% url 'cart_update' 'remove' entry.sub_offer.pk %}" class="btn btn-sm btn-outline-secondary">−</a>
-                                    <span>{{ entry.quantity }}</span>
-                                    <a href="{% url 'cart_update' 'add' entry.sub_offer.pk %}" class="btn btn-sm btn-outline-secondary">+</a>
-                                </div>
+                                <form method="post" action="{% url 'cart_set_quantity' entry.sub_offer.pk %}" class="d-flex align-items-center gap-2">
+                                    {% csrf_token %}
+                                    <input type="number" name="quantity" value="{{ entry.quantity }}" min="0" class="form-control form-control-sm" style="width: 80px;">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">OK</button>
+                                </form>
                             </td>
                             <td>{{ entry.subtotal }} DA</td>
                             <td>
