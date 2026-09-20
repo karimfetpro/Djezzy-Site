@@ -1,86 +1,64 @@
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Mon panier</title>
-</head>
+{% extends 'comptes/base.html' %}
 
-<body>
+{% block title %}Mon panier{% endblock %}
 
-    <h1>Mon panier</h1>
+{% block content %}
+    <h1 class="mb-4">Mon panier</h1>
 
     {% if items %}
+        <div class="table-responsive mb-4">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Sous-offre</th>
+                        <th>Quantité</th>
+                        <th>Sous-total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in items %}
+                        <tr>
+                            <td>{{ entry.sub_offer.name }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="{% url 'cart_update' 'remove' entry.sub_offer.pk %}" class="btn btn-sm btn-outline-secondary">−</a>
+                                    <span>{{ entry.quantity }}</span>
+                                    <a href="{% url 'cart_update' 'add' entry.sub_offer.pk %}" class="btn btn-sm btn-outline-secondary">+</a>
+                                </div>
+                            </td>
+                            <td>{{ entry.subtotal }} DA</td>
+                            <td>
+                                <a href="{% url 'cart_remove' entry.sub_offer.pk %}" class="btn btn-sm btn-outline-danger">Retirer</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="2" class="text-end">Total</th>
+                        <th>{{ total }} DA</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
 
-        {% for item in items %}
-
-            <div>
-                <h3>{{ item.sub_offer.name }}</h3>
-
-                <p>
-                    Prix : {{ item.sub_offer.price }} DA
-                </p>
-
-                <p>
-                    Quantité : {{ item.quantity }}
-                </p>
-
-                <p>
-                    Sous-total : {{ item.subtotal }} DA
-                </p>
-
-                <a href="{% url 'cart_remove' item.sub_offer.id %}">
-                    Supprimer
-                </a>
-            </div>
-
-            <hr>
-
-        {% endfor %}
-
-        <h2>
-            Total : {{ total }} DA
-        </h2>
-
-
-        <h3>Choisir une boutique</h3>
-
-        <form method="POST" action="{% url 'cart_confirm' %}">
-
+        <form method="post" action="{% url 'cart_confirm' %}">
             {% csrf_token %}
-
-            <select name="boutique_id">
-
-                {% for boutique in boutiques %}
-
-                    <option value="{{ boutique.id }}">
-                        {{ boutique.name }}
-                    </option>
-
-                {% endfor %}
-
-            </select>
-
-            <br><br>
-
-            <button type="submit">
-                Confirmer la commande
-            </button>
-
+            <div class="mb-3" style="max-width: 400px;">
+                <label class="form-label">Boutique</label>
+                <select name="boutique_id" class="form-select" required>
+                    {% for boutique in boutiques %}
+                        <option value="{{ boutique.pk }}">{{ boutique.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Valider ma commande</button>
         </form>
-
     {% else %}
-
-        <p>Votre panier est vide.</p>
-
+        <div class="alert alert-secondary">
+            Ton panier est vide. <a href="{% url 'catalog_view' %}">Voir les offres</a>.
+        </div>
     {% endif %}
-
-
-    <br>
-
-    <a href="/">
-        Retour à l'accueil
-    </a>
-
-</body>
-</html>
-```
+{% endblock %}

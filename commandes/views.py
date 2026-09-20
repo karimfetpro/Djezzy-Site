@@ -5,6 +5,7 @@ from django.contrib import messages
 from commandes.models import Order, OrderItem
 from boutiques.models import Boutique
 from catalogue.models import SubOffers
+from comptes.models import Commercials
 
 
 CART_SESSION_KEY = 'cart'
@@ -39,60 +40,8 @@ def order_cancel(request, pk):
 
     return render(request, 'commandes/order_confirm_cancel.html', {'order': order})
 
-
-@login_required
-def order_create(request, sub_offer_pk):
-    sub_offer = get_object_or_404(SubOffers, pk=sub_offer_pk)
-
-    client = request.user.client_profile
-    boutiques = client.boutique_set.all()
-
-    if not boutiques.exists():
-        messages.error(request, "Tu dois d'abord ajouter une boutique avant de commander.")
-        return redirect('boutique_list')
-
-    if request.method == 'POST':
-        boutique_id = request.POST.get('boutique')
-        quantity = int(request.POST.get('quantity', 1))
-        boutique = get_object_or_404(Boutique, pk=boutique_id, client=client)
-
-        order = Order.objects.create(
-            client=client,
-            boutique=boutique,
-        )
-        OrderItem.objects.create(
-            order=order,
-            sub_offer=sub_offer,
-            quantity=quantity,
-        )
-        messages.success(request, "Commande créée avec succès.")
-        return redirect('order_detail', pk=order.pk)
-
-    return render(request, 'commandes/order_create.html', {
-        'sub_offer': sub_offer,
-        'boutiques': boutiques,
-    })
-
-
-def try_confirm_order(order):
-    if order.status != Order.Status.PENDING:
-        return order.status == Order.Status.CONFIRMED
-
-    items = order.items.all()
-
-    if all(item.sub_offer.quota_restant() >= item.quantity for item in items):
-        for item in items:
-            item.sub_offer.commandes_effectuees += item.quantity
-            item.sub_offer.save()
-        order.status = Order.Status.CONFIRMED
-        order.save()
-        return True
-    return False
-
-
 def _get_cart(request):
     return request.session.setdefault(CART_SESSION_KEY, {})
-
 
 @login_required
 def cart_add(request, sub_offer_id):
@@ -107,7 +56,6 @@ def cart_add(request, sub_offer_id):
     messages.success(request, f"{sub_offer.name} ajoutée au panier.")
     return redirect("cart_detail")
 
-
 @login_required
 def cart_remove(request, sub_offer_id):
     cart = _get_cart(request)
@@ -116,7 +64,6 @@ def cart_remove(request, sub_offer_id):
         del cart[key]
     request.session.modified = True
     return redirect("cart_detail")
-
 
 @login_required
 def cart_detail(request):
@@ -132,11 +79,7 @@ def cart_detail(request):
 
     client = request.user.client_profile
     boutiques = client.boutique_set.all()
-    return render(
-        request, "commandes/cart_detail.html",
-        {"items": items, "total": total, "boutiques": boutiques}
-    )
-
+    return render( request, "commandes/cart_detail.html", {"items": items, "total": total, "boutiques": boutiques} )
 
 @login_required
 def cart_confirm(request):
@@ -151,22 +94,71 @@ def cart_confirm(request):
     boutique_id = request.POST.get("boutique_id")
     boutique = get_object_or_404(Boutique, id=boutique_id, client=client)
 
-    order = Order.objects.create(
-        client=client,
-        boutique=boutique,
-    )
+    order = Order.objects.create( client=client, boutique=boutique, )
 
     for key in cart:
         sub_offer = get_object_or_404(SubOffers, id=key)
         OrderItem.objects.create(order=order, sub_offer=sub_offer, quantity=cart[key], unit_price=sub_offer.price)
 
-    confirmed = try_confirm_order(order)
 
     request.session[CART_SESSION_KEY] = {}
     request.session.modified = True
 
-    if confirmed:
-        messages.success(request, "Votre commande a été confirmée.")
-    else:
-        messages.warning(request, "Commande enregistrée, mais le stock est insuffisant.")
     return redirect("order_detail", pk=order.id)
+
+@login_required
+def cart_update(request, sub_offer_id, action):
+    cart = _get_cart(request)
+    key = str(sub_offer_id)
+
+    if action == 'add':
+        cart[key] = cart.get(key, 0) + 1
+    elif action == 'remove' and key in cart:
+        cart[key] -= 1
+        if cart[key] == 0:
+            del cart[key]
+
+    request.session.modified = True
+    return redirect("cart_detail")
+
+@login_required
+def cart_pending_list(request):
+    commercial = Commercials.objects.filter(user=request.user).first()
+    if not commercial:
+        messages.error(request, "Vous n'avez pas la permission d'accéder à cette page.")
+        return redirect('home')
+    orders = Order.objects.filter(status=Order.Status.PENDING).prefetch_related('items__sub_offer')
+    return render(request, 'commandes/cart_pending_list.html', {'orders': orders})
+
+@login_required
+def accept_cart(request, pk):
+    commercial = Commercials.objects.filter(user=request.user).first()
+    if not commercial:
+        messages.error(request, "Vous n'avez pas la permission de réaliser cette action.")
+        return redirect('cart_pending_list')
+
+    order = get_object_or_404(Order, pk=pk)
+    item = order.items.first()
+
+    if item.sub_offer.quota_restant() >= item.quantity:
+        item.sub_offer.commandes_effectuees += item.quantity
+        item.sub_offer.save()
+        order.status = Order.Status.CONFIRMED
+        order.save()
+        messages.success(request, f"Commande #{order.pk} acceptée.")
+    else:
+        messages.error(request, f"Quota insuffisant pour accepter la commande #{order.pk}.")
+
+    return redirect('cart_pending_list')
+
+@login_required
+def refuse_cart(request, pk):
+    commercial = Commercials.objects.filter(user=request.user).first()
+    if commercial:
+        order = get_object_or_404(Order, pk=pk)
+        order.status = Order.Status.CANCELLED
+        order.save()
+        messages.success(request, f"Commande #{order.pk} refusée.")
+    else:
+        messages.error(request, "Vous n'avez pas la permission de réaliser cette action.")
+    return redirect('cart_pending_list')
