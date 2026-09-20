@@ -31,11 +31,7 @@ def login_views(request):
         form = AuthenticationForm(request, data=request.POST)
         next_url = request.POST.get('next') or next_url
         if form.is_valid():
-            user = authenticate(
-                request,
-                username=form.cleaned_data['username'],
-                password=form.cleaned_data['password'],
-            )
+            user = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'], )
             if user is not None:
                 login(request, user)
                 return redirect(next_url or 'home')

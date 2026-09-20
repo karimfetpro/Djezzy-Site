@@ -7,9 +7,7 @@ from boutiques.models import Boutique
 from catalogue.models import SubOffers
 from comptes.models import Commercials
 
-
 CART_SESSION_KEY = 'cart'
-
 
 @login_required
 def order_list(request):
@@ -18,11 +16,7 @@ def order_list(request):
 
 @login_required
 def order_detail(request, pk):
-    order = get_object_or_404(
-        Order.objects.prefetch_related('items__sub_offer'),
-        pk=pk,
-        client=request.user.client_profile,
-    )
+    order = get_object_or_404( Order.objects.prefetch_related('items__sub_offer'), pk=pk, client=request.user.client_profile, )
     return render(request, 'commandes/order_detail.html', {'order': order})
 
 @login_required
@@ -164,9 +158,7 @@ def accept_cart(request, pk):
         messages.error(request, "Vous n'avez pas la permission de réaliser cette action.")
         return redirect('cart_pending_list')
 
-    order = get_object_or_404(
-        Order.objects.prefetch_related('items__sub_offer'), pk=pk
-    )
+    order = get_object_or_404( Order.objects.prefetch_related('items__sub_offer'), pk=pk )
 
     for item in order.items.all():
         if item.sub_offer.quota_restant() < item.quantity:
