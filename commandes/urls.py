@@ -10,8 +10,8 @@ urlpatterns = [
     path('panier/ajouter/<int:sub_offer_id>/', views.cart_add, name='cart_add'),
     path('panier/retirer/<int:sub_offer_id>/', views.cart_remove, name='cart_remove'),
     path('panier/confirmer/', views.cart_confirm, name='cart_confirm'),
-    path('panier/<str:action>/<int:sub_offer_id>/', views.cart_update, name='cart_update'),
     path('panier/quantite/<int:sub_offer_id>/', views.cart_set_quantity, name='cart_set_quantity'),
+    path('panier/<str:action>/<int:sub_offer_id>/', views.cart_update, name='cart_update'),
 
     path('en-attente/', views.cart_pending_list, name='cart_pending_list'),
     path('<int:pk>/accepter/', views.accept_cart, name='accept_cart'),

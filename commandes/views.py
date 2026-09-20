@@ -16,7 +16,6 @@ def order_list(request):
     orders = request.user.client_profile.orders.prefetch_related('items__sub_offer')
     return render(request, 'commandes/order_list.html', {'orders': orders})
 
-
 @login_required
 def order_detail(request, pk):
     order = get_object_or_404(
@@ -25,7 +24,6 @@ def order_detail(request, pk):
         client=request.user.client_profile,
     )
     return render(request, 'commandes/order_detail.html', {'order': order})
-
 
 @login_required
 def order_cancel(request, pk):
@@ -79,7 +77,7 @@ def cart_detail(request):
 
     client = request.user.client_profile
     boutiques = client.boutique_set.all()
-    return render( request, "commandes/cart_detail.html", {"items": items, "total": total, "boutiques": boutiques} )
+    return render(request, "commandes/cart_detail.html", {"items": items, "total": total, "boutiques": boutiques})
 
 @login_required
 def cart_confirm(request):
@@ -94,12 +92,25 @@ def cart_confirm(request):
     boutique_id = request.POST.get("boutique_id")
     boutique = get_object_or_404(Boutique, id=boutique_id, client=client)
 
-    order = Order.objects.create( client=client, boutique=boutique, )
+    order = Order.objects.create(client=client, boutique=boutique)
 
+    quota_depasse = False
     for key in cart:
         sub_offer = get_object_or_404(SubOffers, id=key)
-        OrderItem.objects.create(order=order, sub_offer=sub_offer, quantity=cart[key], unit_price=sub_offer.price)
+        quantity = cart[key]
+        OrderItem.objects.create(order=order, sub_offer=sub_offer, quantity=quantity, unit_price=sub_offer.price)
+        if sub_offer.quota_restant() < quantity:
+            quota_depasse = True
 
+    if quota_depasse:
+        order.status = Order.Status.CANCELLED
+        order.save(update_fields=['status', 'updated_at'])
+        messages.error(
+            request,
+            f"Commande #{order.pk} refusée automatiquement : quota dépassé pour une ou plusieurs sous-offres."
+        )
+    else:
+        messages.success(request, "Commande passée avec succès.")
 
     request.session[CART_SESSION_KEY] = {}
     request.session.modified = True
@@ -153,18 +164,27 @@ def accept_cart(request, pk):
         messages.error(request, "Vous n'avez pas la permission de réaliser cette action.")
         return redirect('cart_pending_list')
 
-    order = get_object_or_404(Order, pk=pk)
-    item = order.items.first()
+    order = get_object_or_404(
+        Order.objects.prefetch_related('items__sub_offer'), pk=pk
+    )
 
-    if item.sub_offer.quota_restant() >= item.quantity:
-        item.sub_offer.commandes_effectuees += item.quantity
-        item.sub_offer.save()
-        order.status = Order.Status.CONFIRMED
-        order.save()
-        messages.success(request, f"Commande #{order.pk} acceptée.")
-    else:
-        messages.error(request, f"Quota insuffisant pour accepter la commande #{order.pk}.")
+    for item in order.items.all():
+        if item.sub_offer.quota_restant() < item.quantity:
+            messages.error(
+                request,
+                f"Quota insuffisant pour « {item.sub_offer.name} », commande #{order.pk} non acceptée."
+            )
+            return redirect('cart_pending_list')
 
+    for item in order.items.all():
+        sub_offer = item.sub_offer
+        sub_offer.commandes_effectuees += item.quantity
+        sub_offer.save(update_fields=['commandes_effectuees'])
+
+    order.status = Order.Status.CONFIRMED
+    order.save(update_fields=['status', 'updated_at'])
+
+    messages.success(request, f"Commande #{order.pk} acceptée.")
     return redirect('cart_pending_list')
 
 @login_required
