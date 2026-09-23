@@ -5,42 +5,43 @@
 {% block content %}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-0">Mes boutiques</h1>
-        <a href="{% url 'add' %}" class="btn btn-primary">+ Ajouter une boutique</a>
+        <a href="{% url 'add' %}" class="btn btn-djezzy">+ Ajouter une boutique</a>
     </div>
 
     {% if boutiques %}
-        <div class="list-group">
+        <div class="row g-3">
             {% for boutique in boutiques %}
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>{{ boutique.name }}</strong>
-                        {% if boutique.statut == 'en_attente' %}
-                            <span class="badge bg-warning text-dark">En attente</span>
-                        {% elif boutique.statut == 'acceptee' %}
-                            <span class="badge bg-success">Acceptée</span>
-                        {% elif boutique.statut == 'refusee' %}
-                            <span class="badge bg-danger">Refusée</span>
-                        {% endif %}
-                        <br>
-                        <small class="text-muted">
-                            {{ boutique.address }}
-                            {% if boutique.phone %} · {{ boutique.phone }}{% endif %}
-                        </small>
-                    </div>
-                    <div>
-                        <a href="{% url 'boutique_update' boutique.pk %}" class="btn btn-sm btn-outline-secondary">Modifier</a>
-                        <form method="post" action="{% url 'delete' %}" class="d-inline">
-                            {% csrf_token %}
-                            <input type="hidden" name="boutique_id" value="{{ boutique.id }}">
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
-                        </form>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">{{ boutique.name }}</h5>
+                                {% if boutique.statut == 'en_attente' %}
+                                    <span class="badge bg-warning text-dark">En attente</span>
+                                {% elif boutique.statut == 'acceptee' %}
+                                    <span class="badge bg-success">Acceptée</span>
+                                {% elif boutique.statut == 'refusee' %}
+                                    <span class="badge bg-danger">Refusée</span>
+                                {% endif %}
+                            </div>
+                            <p class="text-muted small mb-3">
+                                {{ boutique.address }}{% if boutique.commune %} · {{ boutique.commune }}{% endif %}
+                                {% if boutique.phone %}<br>{{ boutique.phone }}{% endif %}
+                            </p>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'boutique_update' boutique.pk %}" class="btn btn-sm btn-outline-djezzy">Modifier</a>
+                                <form method="post" action="{% url 'delete' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="boutique_id" value="{{ boutique.id }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="alert alert-secondary">
-            Aucune boutique pour le moment. <a href="{% url 'add' %}">Ajoute ta première boutique</a>.
-        </div>
+        <div class="alert alert-secondary">Aucune boutique pour le moment. <a href="{% url 'add' %}">Ajoute ta première boutique</a>.</div>
     {% endif %}
 {% endblock %}

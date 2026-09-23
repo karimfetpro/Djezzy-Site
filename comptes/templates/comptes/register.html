@@ -1,23 +1,23 @@
- {% load static %}
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ajouter un client</title>
-    <link rel="stylesheet" href="{% static 'shared/bootsratp/bootstrap.min.css' %}">
-</head>
-<body>
+{% extends 'comptes/base.html' %}
 
-    <div class="container mt-5" style="max-width: 500px;">
-        <h1 class="mb-4">Formulaire client</h1>
+{% block title %}Inscription{% endblock %}
 
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Envoyer</button>
-        </form>
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card card-djezzy">
+                <div class="card-body p-4">
+                    <h1 class="h3 mb-4 text-center">Créer un compte</h1>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-djezzy w-100 mt-2">S'inscrire</button>
+                    </form>
+                    <p class="text-center text-muted mt-4 mb-0">
+                        Déjà un compte ? <a href="{% url 'login' %}" class="text-decoration-none">Se connecter</a>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
-
-</body>
-</html>
+{% endblock %}

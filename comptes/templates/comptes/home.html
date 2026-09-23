@@ -3,7 +3,37 @@
 {% block title %}Accueil{% endblock %}
 
 {% block content %}
-    <h1>Bienvenue sur Djezzy Site</h1>
-    <p class="text-muted">Ceci est la page d'accueil de test.</p>
-    
+    <div class="p-5 mb-4 hero-djezzy">
+        <div class="container-fluid py-4">
+            <h1 class="display-5 fw-bold">Bienvenue sur Djezzy Site</h1>
+            <p class="col-md-8 fs-5">Découvre nos offres et gère facilement tes boutiques et tes commandes.</p>
+            <a href="{% url 'catalog_view' %}" class="btn btn-light btn-lg me-2 fw-semibold">Voir les offres</a>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg">Créer un compte</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if user.is_authenticated and user.client_profile %}
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card card-djezzy h-100 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Mes boutiques</h5>
+                        <p class="card-text text-muted">Gère les boutiques associées à ton compte.</p>
+                        <a href="{% url 'boutique_list' %}" class="btn btn-djezzy btn-sm">Gérer</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card-djezzy h-100 text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Mes commandes</h5>
+                        <p class="card-text text-muted">Suis l'état de tes commandes en cours.</p>
+                        <a href="{% url 'order_list' %}" class="btn btn-djezzy btn-sm">Consulter</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

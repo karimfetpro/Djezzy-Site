@@ -6,60 +6,55 @@
     <h1 class="mb-4">Mon panier</h1>
 
     {% if items %}
-        <div class="table-responsive mb-4">
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th>Sous-offre</th>
-                        <th>Quantité</th>
-                        <th>Sous-total</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for entry in items %}
-                        <tr>
-                            <td>{{ entry.sub_offer.name }}</td>
-                        <td>
-                            <form method="post" action="{% url 'cart_set_quantity' entry.sub_offer.pk %}">
-                                {% csrf_token %}
-                                <input type="number" name="quantity" value="{{ entry.quantity }}" min="0"
-                                    class="form-control form-control-sm" style="width: 80px;"
-                                onchange="this.form.submit()">
-                             </form>
-                        </td>
-                            <td>{{ entry.subtotal }} DA</td>
-                            <td>
-                                <a href="{% url 'cart_remove' entry.sub_offer.pk %}" class="btn btn-sm btn-outline-danger">Retirer</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th colspan="2" class="text-end">Total</th>
-                        <th>{{ total }} DA</th>
-                        <th></th>
-                    </tr>
-                </tfoot>
-            </table>
+        <div class="card mb-3">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr><th>Sous-offre</th><th>Quantité</th><th>Sous-total</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in items %}
+                            <tr>
+                                <td>{{ entry.sub_offer.name }}</td>
+                                <td>
+                                    <form method="post" action="{% url 'cart_set_quantity' entry.sub_offer.pk %}">
+                                        {% csrf_token %}
+                                        <input type="number" name="quantity" value="{{ entry.quantity }}" min="0"
+                                               class="form-control form-control-sm" style="width: 90px;"
+                                               onchange="this.form.submit()">
+                                    </form>
+                                </td>
+                                <td class="fw-semibold">{{ entry.subtotal }} DA</td>
+                                <td><a href="{% url 'cart_remove' entry.sub_offer.pk %}" class="btn btn-sm btn-outline-danger">Retirer</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-light"><th colspan="2" class="text-end">Total</th><th>{{ total }} DA</th><th></th></tr>
+                    </tfoot>
+                </table>
+            </div>
         </div>
 
-        <form method="post" action="{% url 'cart_confirm' %}">
-            {% csrf_token %}
-            <div class="mb-3" style="max-width: 400px;">
-                <label class="form-label">Boutique</label>
-                <select name="boutique_id" class="form-select" required>
-                    {% for boutique in boutiques %}
-                        <option value="{{ boutique.pk }}">{{ boutique.name }}</option>
-                    {% endfor %}
-                </select>
+        <a href="{% url 'catalog_view' %}" class="btn btn-outline-djezzy mb-4">+ Ajouter d'autres offres</a>
+
+        <div class="card card-djezzy" style="max-width: 450px;">
+            <div class="card-body">
+                <form method="post" action="{% url 'cart_confirm' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Boutique</label>
+                        <select name="boutique_id" class="form-select" required>
+                            {% for boutique in boutiques %}
+                                <option value="{{ boutique.pk }}">{{ boutique.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-djezzy w-100">Valider ma commande</button>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary">Valider ma commande</button>
-        </form>
-    {% else %}
-        <div class="alert alert-secondary">
-            Ton panier est vide. <a href="{% url 'catalog_view' %}">Voir les offres</a>.
         </div>
+    {% else %}
+        <div class="alert alert-secondary">Ton panier est vide. <a href="{% url 'catalog_view' %}">Voir les offres</a>.</div>
     {% endif %}
 {% endblock %}

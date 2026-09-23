@@ -8,8 +8,7 @@
     {% if categories %}
         {% for categorie in categories %}
             <div class="mb-5">
-                <h3 class="mb-3">{{ categorie.type }}</h3>
-
+                <h3 class="mb-3 pb-2 border-bottom">{{ categorie.type }}</h3>
                 {% if categorie.offers.all %}
                     <div class="row g-4">
                         {% for offer in categorie.offers.all %}
@@ -17,11 +16,15 @@
                                 <div class="card h-100">
                                     {% if offer.image %}
                                         <img src="{{ offer.image.url }}" class="card-img-top" alt="{{ offer.name }}" style="height: 180px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                                            <span class="text-muted">Aucune image</span>
+                                        </div>
                                     {% endif %}
                                     <div class="card-body d-flex flex-column">
                                         <h5 class="card-title">{{ offer.name }}</h5>
                                         <p class="card-text text-muted">{{ offer.description|default:"" }}</p>
-                                        <a href="{% url 'offer_detail' offer.pk %}" class="btn btn-primary mt-auto">Voir les formules</a>
+                                        <a href="{% url 'offer_detail' offer.pk %}" class="btn btn-djezzy mt-auto">Voir les formules</a>
                                     </div>
                                 </div>
                             </div>

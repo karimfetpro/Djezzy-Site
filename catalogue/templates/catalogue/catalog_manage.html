@@ -5,16 +5,16 @@
 {% block content %}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-0">Catalogue</h1>
-        <a href="{% url 'categorie_create' %}" class="btn btn-primary">+ Nouvelle catégorie</a>
+        <a href="{% url 'categorie_create' %}" class="btn btn-djezzy">+ Nouvelle catégorie</a>
     </div>
 
     {% if categories %}
         {% for categorie in categories %}
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <strong>{{ categorie.type }}</strong>
-                    <div>
-                        <a href="{% url 'offer_create' %}" class="btn btn-sm btn-outline-primary">+ Offre</a>
+            <div class="card card-djezzy mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <strong class="fs-5">{{ categorie.type }}</strong>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'offer_create' %}" class="btn btn-sm btn-outline-djezzy">+ Offre</a>
                         <a href="{% url 'categorie_update' categorie.pk %}" class="btn btn-sm btn-outline-secondary">Modifier</a>
                         <a href="{% url 'categorie_delete' categorie.pk %}" class="btn btn-sm btn-outline-danger">Supprimer</a>
                     </div>
@@ -22,16 +22,17 @@
                 <div class="card-body">
                     {% if categorie.offers.all %}
                         {% for offer in categorie.offers.all %}
-                            <div class="border rounded p-3 mb-3">
-                                <div class="d-flex justify-content-between align-items-start">
+                            <div class="border rounded-3 p-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
                                     <div class="d-flex gap-3">
                                         {% if offer.image %}
-                                            <img src="{{ offer.image.url }}" alt="{{ offer.name }}" style="width: 60px; height: 60px; object-fit: cover;" class="rounded">
+                                            <img src="{{ offer.image.url }}" alt="{{ offer.name }}" style="width: 60px; height: 60px; object-fit: cover;" class="rounded-3">
                                         {% endif %}
-                                        <span><strong>{{ offer.name }}</strong> — {{ offer.description|default:"Pas de description" }}</span>
+                                        <span><strong>{{ offer.name }}</strong><br>
+                                        <span class="text-muted small">{{ offer.description|default:"Pas de description" }}</span></span>
                                     </div>
-                                    <div>
-                                        <a href="{% url 'suboffer_create' %}" class="btn btn-sm btn-outline-primary">+ Sous-offre</a>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'suboffer_create' %}" class="btn btn-sm btn-outline-djezzy">+ Sous-offre</a>
                                         <a href="{% url 'offer_update' offer.pk %}" class="btn btn-sm btn-outline-secondary">Modifier</a>
                                         <a href="{% url 'offer_delete' offer.pk %}" class="btn btn-sm btn-outline-danger">Supprimer</a>
                                     </div>
@@ -40,13 +41,13 @@
                                 {% if offer.sub_offers.all %}
                                     <ul class="list-group mt-3">
                                         {% for sub in offer.sub_offers.all %}
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
                                                 <div class="d-flex align-items-center gap-3">
                                                     {% if sub.image %}
-                                                        <img src="{{ sub.image.url }}" alt="{{ sub.name }}" style="width: 40px; height: 40px; object-fit: cover;" class="rounded">
+                                                        <img src="{{ sub.image.url }}" alt="{{ sub.name }}" style="width: 40px; height: 40px; object-fit: cover;" class="rounded-3">
                                                     {% endif %}
                                                     <div>
-                                                        <span>{{ sub.name }} — {{ sub.price }} DA</span><br>
+                                                        <span>{{ sub.name }} — <strong>{{ sub.price }} DA</strong></span><br>
                                                         <small class="text-muted">
                                                             {% if sub.quota_atteint %}
                                                                 <span class="badge bg-danger">Quota atteint</span>
@@ -56,7 +57,7 @@
                                                         </small>
                                                     </div>
                                                 </div>
-                                                <div>
+                                                <div class="d-flex gap-2">
                                                     <a href="{% url 'suboffer_update' sub.pk %}" class="btn btn-sm btn-outline-secondary">Modifier</a>
                                                     <a href="{% url 'suboffer_delete' sub.pk %}" class="btn btn-sm btn-outline-danger">Supprimer</a>
                                                 </div>

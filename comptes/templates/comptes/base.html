@@ -6,47 +6,105 @@
     <title>{% block title %}Djezzy Site{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'shared/bootsratp/bootstrap.min.css' %}">
+    <style>
+        :root {
+            --djezzy-red: #ED1C24;
+            --djezzy-red-dark: #B3121A;
+            --djezzy-black: #1A1A1A;
+            --djezzy-grey: #f5f5f5;
+        }
+
+        body { background-color: var(--djezzy-grey); }
+
+        /* Navbar */
+        .navbar-djezzy { background-color: var(--djezzy-black); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .navbar-djezzy .navbar-brand { font-weight: 700; color: #fff; }
+        .navbar-djezzy .navbar-brand span { color: var(--djezzy-red); }
+        .navbar-djezzy .nav-link { color: rgba(255,255,255,0.85); font-weight: 500; }
+        .navbar-djezzy .nav-link:hover, .navbar-djezzy .nav-link.active { color: var(--djezzy-red); }
+        .navbar-djezzy .btn-link-logout { color: rgba(255,255,255,0.55); }
+
+        /* Boutons marque */
+        .btn-djezzy { background-color: var(--djezzy-red); border-color: var(--djezzy-red); color: #fff; font-weight: 600; }
+        .btn-djezzy:hover, .btn-djezzy:focus { background-color: var(--djezzy-red-dark); border-color: var(--djezzy-red-dark); color: #fff; }
+        .btn-outline-djezzy { border: 2px solid var(--djezzy-red); color: var(--djezzy-red); font-weight: 600; background: transparent; }
+        .btn-outline-djezzy:hover { background-color: var(--djezzy-red); color: #fff; }
+
+        /* Cartes */
+        .card { border-radius: 0.6rem; }
+        .card-djezzy { border: none; border-top: 4px solid var(--djezzy-red); box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+
+        /* Bandeau hero */
+        .hero-djezzy { background: linear-gradient(135deg, var(--djezzy-red) 0%, var(--djezzy-red-dark) 100%); color: #fff; border-radius: 1rem; }
+        .hero-djezzy .text-muted { color: rgba(255,255,255,0.85) !important; }
+
+        /* Style générique des formulaires (fonctionne avec {{ form.as_p }} sans package supplémentaire) */
+        form p { margin-bottom: 0.9rem; }
+        form input[type="text"], form input[type="email"], form input[type="password"],
+        form input[type="number"], form input[type="tel"], form select, form textarea {
+            display: block; width: 100%; padding: 0.5rem 0.75rem; font-size: 1rem;
+            border: 1px solid #ced4da; border-radius: 0.5rem;
+        }
+        form input:focus, form select:focus, form textarea:focus {
+            border-color: var(--djezzy-red); outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(237,28,36,0.15);
+        }
+        form label { font-weight: 600; margin-bottom: 0.3rem; display: inline-block; }
+        form ul.errorlist { color: var(--djezzy-red-dark); list-style: none; padding-left: 0; font-size: 0.85rem; margin: 0.2rem 0 0.5rem; }
+
+        .list-group-item { border-color: rgba(0,0,0,0.06); }
+        footer.site-footer { color: #999; font-size: 0.85rem; }
+    </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-djezzy">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">Djezzy Site</a>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Accueil</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'catalog_view' %}">Offres</a></li>
-                {% if user.is_authenticated %}
-                    {% if user.client_profile %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'boutique_list' %}">Mes boutiques</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'order_list' %}">Mes commandes</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'cart_detail' %}">Panier</a></li>
-  
+            <a class="navbar-brand" href="{% url 'home' %}">Djezzy<span>Site</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMain">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'catalog_view' %}">Offres</a></li>
+                    {% if user.is_authenticated %}
+                        {% if user.client_profile %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'boutique_list' %}">Mes boutiques</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'order_list' %}">Mes commandes</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'cart_detail' %}">🛒 Panier</a></li>
+                        {% endif %}
+                        {% if user.commercial_profile %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'catalog_manage' %}">Catalogue</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'boutique_pending_list' %}">Boutiques en attente</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'cart_pending_list' %}">Commandes en attente</a></li>
+                        {% endif %}
+                        <li class="nav-item"><span class="nav-link">Bonjour, {{ user.username }}</span></li>
+                        <li class="nav-item"><a class="nav-link btn-link-logout" href="{% url 'logout' %}">Déconnexion</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Connexion</a></li>
+                        <li class="nav-item ms-lg-2"><a class="btn btn-djezzy btn-sm" href="{% url 'register' %}">Inscription</a></li>
                     {% endif %}
-                    {% if user.commercial_profile %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'catalog_manage' %}">Catalogue</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'boutique_pending_list' %}">Boutiques en attente</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'cart_pending_list' %}">Commandes en attente</a></li>
-                    {% endif %}
-                    <li class="nav-item"><span class="nav-link">Bonjour, {{ user.username }}</span></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Déconnexion</a></li>
-                {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Connexion</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Inscription</a></li>
-                {% endif %}
-            </ul>
+                </ul>
+            </div>
         </div>
     </nav>
 
-    <div class="container mt-5">
+    <div class="container mt-4 mb-5">
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-info">{{ message }}</div>
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% else %}alert-info{% endif %} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
             {% endfor %}
         {% endif %}
 
         {% block content %}
         {% endblock %}
     </div>
+
+    <footer class="site-footer text-center py-4">&copy; {% now "Y" %} Djezzy Site</footer>
 
     <script src="{% static 'shared/bootsratp/bootstrap.bundle.min.js' %}"></script>
 </body>
