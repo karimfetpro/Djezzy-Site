@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
+from catalogue import models
 from commandes.models import Order, OrderItem
 from boutiques.models import Boutique
 from catalogue.models import SubOffers
@@ -85,30 +86,28 @@ def cart_confirm(request):
     client = request.user.client_profile
     boutique_id = request.POST.get("boutique_id")
     boutique = get_object_or_404(Boutique, id=boutique_id, client=client)
-
     order = Order.objects.create(client=client, boutique=boutique)
-
+    
     quota_depasse = False
     for key in cart:
         sub_offer = get_object_or_404(SubOffers, id=key)
         quantity = cart[key]
         OrderItem.objects.create(order=order, sub_offer=sub_offer, quantity=quantity, unit_price=sub_offer.price)
-        if sub_offer.quota_restant() < quantity:
+        if sub_offer.quota_restant(boutique.commune) < quantity:
             quota_depasse = True
-
     if quota_depasse:
         order.status = Order.Status.CANCELLED
         order.save(update_fields=['status', 'updated_at'])
         messages.error(
             request,
-            f"Commande #{order.pk} refusée automatiquement : quota dépassé pour une ou plusieurs sous-offres."
+            f"Commande #{order.pk} refusée automatiquement : quota dépassé pour une ou plusieurs sous-offres à {boutique.commune}."
         )
     else:
         messages.success(request, "Commande passée avec succès.")
-
+ 
     request.session[CART_SESSION_KEY] = {}
     request.session.modified = True
-
+ 
     return redirect("order_detail", pk=order.id)
 
 @login_required
@@ -157,25 +156,27 @@ def accept_cart(request, pk):
     if not commercial:
         messages.error(request, "Vous n'avez pas la permission de réaliser cette action.")
         return redirect('cart_pending_list')
-
-    order = get_object_or_404( Order.objects.prefetch_related('items__sub_offer'), pk=pk )
-
+ 
+    order = get_object_or_404(Order.objects.prefetch_related('items__sub_offer'), pk=pk)
+    commune = order.boutique.commune
+ 
     for item in order.items.all():
-        if item.sub_offer.quota_restant() < item.quantity:
+        if item.sub_offer.quota_restant(commune) < item.quantity:
             messages.error(
                 request,
-                f"Quota insuffisant pour « {item.sub_offer.name} », commande #{order.pk} non acceptée."
+                f"Quota insuffisant pour « {item.sub_offer.name} » à {commune}, commande #{order.pk} non acceptée."
             )
             return redirect('cart_pending_list')
-
+ 
     for item in order.items.all():
-        sub_offer = item.sub_offer
-        sub_offer.commandes_effectuees += item.quantity
-        sub_offer.save(update_fields=['commandes_effectuees'])
-
+        from catalogue.models import SubOfferQuota
+        SubOfferQuota.objects.filter(sub_offer=item.sub_offer, commune=commune).update(
+            quantity_sold=models.F('quantity_sold') + item.quantity
+        )
+ 
     order.status = Order.Status.CONFIRMED
     order.save(update_fields=['status', 'updated_at'])
-
+ 
     messages.success(request, f"Commande #{order.pk} acceptée.")
     return redirect('cart_pending_list')
 
