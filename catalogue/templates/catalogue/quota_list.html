@@ -10,6 +10,12 @@
     <a href="{% url 'quota_create' sub_offer.pk %}" class="btn btn-djezzy">+ Ajouter un quota</a>
 </div>
 
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
 {% if quotas %}
 <div class="table-responsive">
     <table class="table table-hover align-middle bg-white shadow-sm rounded">
@@ -54,4 +60,8 @@
     aucune commande n'y sera acceptée. <a href="{% url 'quota_create' sub_offer.pk %}">Ajoutez-en un</a>.
 </div>
 {% endif %}
+
+{% block content %}
+HELLO TEST 123
+<a href="{% url 'catalog_manage' %}" ...>
 {% endblock %}

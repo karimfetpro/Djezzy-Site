@@ -8,6 +8,12 @@
         <a href="{% url 'categorie_create' %}" class="btn btn-djezzy">+ Nouvelle catégorie</a>
     </div>
 
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
     {% if categories %}
         {% for categorie in categories %}
             <div class="card card-djezzy mb-4">
@@ -48,7 +54,15 @@
                                                     {% endif %}
                                                     <div>
                                                         <span>{{ sub.name }} — <strong>{{ sub.price }} DA</strong></span><br>
-
+                                                        <span class="text-muted small">
+                                                            {% with total_quotas=sub.quotas.all %}
+                                                                {% if total_quotas %}
+                                                                    Quotas définis pour {{ total_quotas|length }} commune{{ total_quotas|length|pluralize }}
+                                                                {% else %}
+                                                                    Aucun quota défini — aucune vente possible
+                                                                {% endif %}
+                                                            {% endwith %}
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex gap-2">
