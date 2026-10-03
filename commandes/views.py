@@ -71,7 +71,7 @@ def cart_detail(request):
         items.append({"sub_offer": sub_offer, "quantity": quantity, "subtotal": subtotal})
 
     client = request.user.client_profile
-    boutiques = client.boutique_set.all()
+    boutiques = client.boutiques.all()
     return render(request, "commandes/cart_detail.html", {"items": items, "total": total, "boutiques": boutiques})
 
 @login_required

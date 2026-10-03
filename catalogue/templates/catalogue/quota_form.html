@@ -1,0 +1,53 @@
+{% extends 'comptes/base.html' %}
+
+{% block title %}{% if quota %}Modifier{% else %}Ajouter{% endif %} un quota{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card card-djezzy">
+            <div class="card-body p-4">
+                <h3 class="card-title fw-bold mb-1">
+                    {% if quota %}Modifier le quota{% else %}Ajouter un quota{% endif %}
+                </h3>
+                <p class="text-muted mb-4">Sous-offre : <strong>{{ sub_offer.name }}</strong></p>
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.commune.id_for_label }}" class="form-label">Commune</label>
+                        <input type="text" name="{{ form.commune.html_name }}" id="{{ form.commune.id_for_label }}"
+                               class="form-control {% if form.commune.errors %}is-invalid{% endif %}"
+                               value="{{ form.commune.value|default:'' }}" required>
+                        {% if form.commune.errors %}<div class="invalid-feedback">{{ form.commune.errors|striptags }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.quota_total.id_for_label }}" class="form-label">Stock total alloué</label>
+                        <input type="number" min="0" name="{{ form.quota_total.html_name }}" id="{{ form.quota_total.id_for_label }}"
+                               class="form-control {% if form.quota_total.errors %}is-invalid{% endif %}"
+                               value="{{ form.quota_total.value|default:'' }}" required>
+                        {% if form.quota_total.errors %}
+                            <div class="invalid-feedback">{{ form.quota_total.errors|striptags }}</div>
+                        {% elif quota %}
+                            <div class="form-text">Déjà vendu : {{ quota.quantity_sold }}. Baisser le stock sous ce chiffre bloquera toute nouvelle vente dans cette commune.</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-djezzy flex-grow-1">Enregistrer</button>
+                        <a href="{% url 'quota_list' sub_offer.pk %}" class="btn btn-outline-secondary">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
