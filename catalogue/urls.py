@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.catalog_manage, name='catalog_manage'),
-    
+
     path('offres/', views.catalog_view, name='catalog_view'),
     path('offres/<int:pk>/', views.offer_detail, name='offer_detail'),
 
@@ -18,4 +18,9 @@ urlpatterns = [
     path('suboffer/create/', views.suboffer_create, name='suboffer_create'),
     path('suboffer/<int:pk>/update/', views.suboffer_update, name='suboffer_update'),
     path('suboffer/<int:pk>/delete/', views.suboffer_delete, name='suboffer_delete'),
+
+    path('suboffer/<int:sub_offer_pk>/quotas/', views.quota_list, name='quota_list'),
+    path('suboffer/<int:sub_offer_pk>/quotas/create/', views.quota_create, name='quota_create'),
+    path('quotas/<int:pk>/update/', views.quota_update, name='quota_update'),
+    path('quotas/<int:pk>/delete/', views.quota_delete, name='quota_delete'),
 ]

@@ -13,7 +13,8 @@ def boutique_create(request):
         if form.is_valid():
             boutique = form.save(commit=False)
             boutique.client = request.user.client_profile
-            boutique.statut = 'en_attente'
+            # ⚠️ plus besoin de fixer statut à la main : Boutique.Statut.EN_ATTENTE
+            # est déjà la valeur par défaut du modèle.
             boutique.save()
             messages.success(request, "Boutique ajoutée avec succès.")
             return redirect('boutique_list')
@@ -24,7 +25,7 @@ def boutique_create(request):
 
 @login_required
 def boutique_list(request):
-    boutiques = request.user.client_profile.boutique_set.all()
+    boutiques = request.user.client_profile.boutiques.all()
     return render(request, 'boutiques/boutique_list.html', {'boutiques': boutiques})
 
 @login_required
@@ -46,7 +47,7 @@ def boutique_delete(request):
     if request.method == 'POST':
         boutique_id = request.POST.get('boutique_id')
         try:
-            boutique = request.user.client_profile.boutique_set.get(id=boutique_id)
+            boutique = request.user.client_profile.boutiques.get(id=boutique_id)
             boutique.delete()
             messages.success(request, "Boutique supprimée avec succès.")
         except Boutique.DoesNotExist:
@@ -59,7 +60,7 @@ def boutique_pending_list(request):
     if not commercial:
         messages.error(request, "Vous n'avez pas la permission d'accéder à cette page.")
         return redirect('home')
-    boutiques = Boutique.objects.filter(statut='en_attente')
+    boutiques = Boutique.objects.filter(statut=Boutique.Statut.EN_ATTENTE)
     return render(request, 'boutiques/boutique_pending_list.html', {'boutiques': boutiques})
 
 @login_required
@@ -67,7 +68,7 @@ def accept_boutique(request, pk):
     commercial = Commercials.objects.filter(user=request.user).first()
     if commercial:
         boutique = get_object_or_404(Boutique, pk=pk)
-        boutique.statut = 'acceptee'
+        boutique.statut = Boutique.Statut.ACCEPTEE
         boutique.save()
         messages.success(request, f"Boutique « {boutique.name} » acceptée.")
     else:
@@ -79,7 +80,7 @@ def refuse_boutique(request, pk):
     commercial = Commercials.objects.filter(user=request.user).first()
     if commercial:
         boutique = get_object_or_404(Boutique, pk=pk)
-        boutique.statut = 'refusee'
+        boutique.statut = Boutique.Statut.REFUSEE
         boutique.save()
         messages.success(request, f"Boutique « {boutique.name} » refusée.")
     else:

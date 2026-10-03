@@ -34,25 +34,8 @@ class SubOffers(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='sous_offres/', blank=True, null=True)
     features = models.JSONField(blank=True, null=True, default=dict)
-    commandes_effectuees = models.PositiveIntegerField(default=0, verbose_name="Commandes effectuées")
     created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = "Sous-offre"
-        verbose_name_plural = "Sous-offres"
-        ordering = ['name']
-
-    def __str__(self):
-        return f"{self.name} ({self.offer.name})"
-
-class SubOffers(models.Model):
-    offer = models.ForeignKey(Offers, on_delete=models.CASCADE, related_name='sub_offers')
-    name = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='sous_offres/', blank=True, null=True)
-    features = models.JSONField(blank=True, null=True, default=dict)
-    created_at = models.DateTimeField(auto_now_add=True)
-
+    
 
     class Meta:
         verbose_name = "Sous-offre"
@@ -63,13 +46,15 @@ class SubOffers(models.Model):
         return f"{self.name} ({self.offer.name})"
 
     def quota_restant(self, commune):
-        """Stock restant pour CETTE sous-offre, dans UNE commune donnée."""
+        """Stock restant pour CETTE sous-offre, dans UNE commune donnée.
+        Si aucun quota n'a été défini pour cette commune, le stock est 0
+        (pas de vente possible tant qu'un quota n'a pas été explicitement alloué)."""
         quota = self.quotas.filter(commune=commune).first()
         return quota.remaining if quota else 0
 
 
 class SubOfferQuota(models.Model):
-    """Stock disponible pour une sous-offre donnée, dans une commune donnée."""
+    
     sub_offer = models.ForeignKey(SubOffers, on_delete=models.CASCADE, related_name='quotas')
     commune = models.CharField(max_length=100)
     quota_total = models.PositiveIntegerField(help_text="Stock total alloué pour cette commune.")
@@ -96,4 +81,3 @@ class SubOfferQuota(models.Model):
     @property
     def is_available(self):
         return self.remaining > 0
-

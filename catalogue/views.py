@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from catalogue.models import Categories, Offers, SubOffers
-from catalogue.forms import CategorieForm, OfferForm, SubOfferForm
+from catalogue.models import Categories, Offers, SubOffers, SubOfferQuota
+from catalogue.forms import CategorieForm, OfferForm, SubOfferForm, QuotaForm
 from comptes.models import Commercials
 
 def catalog_view(request):
@@ -109,9 +109,9 @@ def suboffer_create(request):
     if request.method == 'POST':
         form = SubOfferForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Sous-offre ajoutée.")
-            return redirect('catalog_manage')
+            sub_offer = form.save()
+            messages.success(request, "Sous-offre ajoutée. Pensez à définir ses quotas par commune.")
+            return redirect('quota_list', sub_offer_pk=sub_offer.pk)
     else:
         form = SubOfferForm()
     return render(request, 'catalogue/suboffer_form.html', {'form': form})
@@ -141,3 +141,52 @@ def suboffer_delete(request, pk):
     return render(request, 'catalogue/catalog_confirm_delete.html', {
         'object_name': sub_offer.name,
     })
+
+@login_required
+def quota_list(request, sub_offer_pk):
+    _commercial_or_404(request)
+    sub_offer = get_object_or_404(SubOffers, pk=sub_offer_pk)
+    quotas = sub_offer.quotas.all()
+    return render(request, 'catalogue/quota_list.html', {
+        'sub_offer': sub_offer,
+        'quotas': quotas,
+    })
+
+@login_required
+def quota_create(request, sub_offer_pk):
+    _commercial_or_404(request)
+    sub_offer = get_object_or_404(SubOffers, pk=sub_offer_pk)
+    if request.method == 'POST':
+        form = QuotaForm(request.POST, sub_offer=sub_offer)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Quota ajouté.")
+            return redirect('quota_list', sub_offer_pk=sub_offer.pk)
+    else:
+        form = QuotaForm(sub_offer=sub_offer)
+    return render(request, 'catalogue/quota_form.html', {'form': form, 'sub_offer': sub_offer})
+
+@login_required
+def quota_update(request, pk):
+    _commercial_or_404(request)
+    quota = get_object_or_404(SubOfferQuota, pk=pk)
+    sub_offer = quota.sub_offer
+    if request.method == 'POST':
+        form = QuotaForm(request.POST, instance=quota, sub_offer=sub_offer)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Quota modifié.")
+            return redirect('quota_list', sub_offer_pk=sub_offer.pk)
+    else:
+        form = QuotaForm(instance=quota, sub_offer=sub_offer)
+    return render(request, 'catalogue/quota_form.html', {'form': form, 'sub_offer': sub_offer, 'quota': quota})
+
+@login_required
+def quota_delete(request, pk):
+    _commercial_or_404(request)
+    quota = get_object_or_404(SubOfferQuota, pk=pk)
+    sub_offer = quota.sub_offer
+    if request.method == 'POST':
+        quota.delete()
+        messages.success(request, "Quota supprimé.")
+    return redirect('quota_list', sub_offer_pk=sub_offer.pk)

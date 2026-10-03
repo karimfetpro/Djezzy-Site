@@ -1,0 +1,65 @@
+{% extends "comptes/base.html" %}
+
+{% block title %}Quotas — {{ sub_offer.name }} — Djezzy Offres{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <a href="{% url 'catalog_manage' %}" class="text-muted small d-inline-block mb-3">&larr; Retour au catalogue</a>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Quotas par commune — {{ sub_offer.name }}</h1>
+        <a href="{% url 'quota_create' sub_offer.pk %}" class="btn btn-danger">+ Ajouter un quota</a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if quotas %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle bg-white shadow-sm rounded">
+            <thead class="table-dark">
+                <tr>
+                    <th>Commune</th>
+                    <th class="text-end">Stock total</th>
+                    <th class="text-end">Vendu</th>
+                    <th class="text-end">Restant</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quota in quotas %}
+                <tr>
+                    <td class="fw-semibold">{{ quota.commune }}</td>
+                    <td class="text-end">{{ quota.quota_total }}</td>
+                    <td class="text-end">{{ quota.quantity_sold }}</td>
+                    <td class="text-end">
+                        {% if quota.is_available %}
+                            <span class="badge bg-success">{{ quota.remaining }}</span>
+                        {% else %}
+                            <span class="badge bg-danger">0</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'quota_update' quota.pk %}" class="btn btn-outline-dark btn-sm">Modifier</a>
+                        <form action="{% url 'quota_delete' quota.pk %}" method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer le quota de {{ quota.commune }} ?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-warning">
+        Aucun quota défini pour cette sous-offre. Tant qu'aucun quota n'est alloué à une commune,
+        aucune commande n'y sera acceptée. <a href="{% url 'quota_create' sub_offer.pk %}">Ajoutez-en un</a>.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
