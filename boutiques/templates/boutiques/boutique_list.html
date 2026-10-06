@@ -1,47 +1,67 @@
-{% extends 'comptes/base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Mes boutiques{% endblock %}
+{% block title %}Mes boutiques — Djezzy Offres{% endblock %}
 
 {% block content %}
+<div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Mes boutiques</h1>
-        <a href="{% url 'add' %}" class="btn btn-djezzy">+ Ajouter une boutique</a>
+        <h1 class="h3 mb-0">Mes boutiques</h1>
+        <a href="{% url 'add' %}" class="btn btn-danger">+ Ajouter une boutique</a>
     </div>
 
-    {% if boutiques %}
-        <div class="row g-3">
-            {% for boutique in boutiques %}
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title mb-0">{{ boutique.name }}</h5>
-                                {% if boutique.statut == 'en_attente' %}
-                                    <span class="badge bg-warning text-dark">En attente</span>
-                                {% elif boutique.statut == 'acceptee' %}
-                                    <span class="badge bg-success">Acceptée</span>
-                                {% elif boutique.statut == 'refusee' %}
-                                    <span class="badge bg-danger">Refusée</span>
-                                {% endif %}
-                            </div>
-                            <p class="text-muted small mb-3">
-                                {{ boutique.address }}{% if boutique.commune %} · {{ boutique.commune }}{% endif %}
-                                {% if boutique.phone %}<br>{{ boutique.phone }}{% endif %}
-                            </p>
-                            <div class="d-flex gap-2">
-                                <a href="{% url 'boutique_update' boutique.pk %}" class="btn btn-sm btn-outline-djezzy">Modifier</a>
-                                <form method="post" action="{% url 'delete' %}" class="d-inline">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="boutique_id" value="{{ boutique.id }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="alert alert-secondary">Aucune boutique pour le moment. <a href="{% url 'add' %}">Ajoute ta première boutique</a>.</div>
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
     {% endif %}
+
+    {% if boutiques %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle bg-white shadow-sm rounded">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nom</th>
+                    <th>Wilaya</th>
+                    <th>Commune</th>
+                    <th>Téléphone</th>
+                    <th>Statut</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for boutique in boutiques %}
+                <tr>
+                    <td class="fw-semibold">{{ boutique.name }}</td>
+                    <td>{{ boutique.wilaya|default:"—" }}</td>
+                    <td>{{ boutique.commune|default:"—" }}</td>
+                    <td>{{ boutique.phone|default:"—" }}</td>
+                    <td>
+                        {% if boutique.statut == "acceptee" %}
+                            <span class="badge bg-success">{{ boutique.get_statut_display }}</span>
+                        {% elif boutique.statut == "refusee" %}
+                            <span class="badge bg-secondary">{{ boutique.get_statut_display }}</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">{{ boutique.get_statut_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'boutique_update' boutique.pk %}" class="btn btn-outline-dark btn-sm">Modifier</a>
+                        <form action="{% url 'delete' %}" method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer « {{ boutique.name }} » ?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="boutique_id" value="{{ boutique.pk }}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-secondary">
+        Vous n'avez encore aucune boutique. <a href="{% url 'add' %}">Ajoutez-en une</a>.
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

@@ -1,35 +1,55 @@
-{% extends 'comptes/base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Boutiques en attente{% endblock %}
+{% block title %}Boutiques en attente — Djezzy Offres{% endblock %}
 
 {% block content %}
-    <h1 class="mb-4">Boutiques en attente de validation</h1>
+<div class="container my-5">
+    <h1 class="h3 mb-4">Boutiques en attente de validation</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
 
     {% if boutiques %}
-        <div class="list-group">
-            {% for boutique in boutiques %}
-                <div class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                        <div>
-                            <strong>{{ boutique.name }}</strong>
-                            <span class="text-muted"> — {{ boutique.client.prenom }} {{ boutique.client.nom }}</span><br>
-                            <small class="text-muted">{{ boutique.address }}</small>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <form method="post" action="{% url 'accept_boutique' boutique.pk %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-success">Accepter</button>
-                            </form>
-                            <form method="post" action="{% url 'refuse_boutique' boutique.pk %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Refuser</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle bg-white shadow-sm rounded">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nom</th>
+                    <th>Client</th>
+                    <th>Wilaya</th>
+                    <th>Commune</th>
+                    <th>Téléphone</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for boutique in boutiques %}
+                <tr>
+                    <td class="fw-semibold">{{ boutique.name }}</td>
+                    <td>{{ boutique.client }}</td>
+                    <td>{{ boutique.wilaya|default:"—" }}</td>
+                    <td>{{ boutique.commune|default:"—" }}</td>
+                    <td>{{ boutique.phone|default:"—" }}</td>
+                    <td class="text-end">
+                        <form action="{% url 'accept_boutique' boutique.pk %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm">Accepter</button>
+                        </form>
+                        <form action="{% url 'refuse_boutique' boutique.pk %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Refuser</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
-        <div class="alert alert-secondary">Aucune boutique en attente.</div>
+    <div class="alert alert-secondary">Aucune boutique en attente.</div>
     {% endif %}
+</div>
 {% endblock %}

@@ -22,11 +22,13 @@
                     {% csrf_token %}
 
                     <div class="mb-3">
-                        <label for="{{ form.commune.id_for_label }}" class="form-label">Commune</label>
-                        <input type="text" name="{{ form.commune.html_name }}" id="{{ form.commune.id_for_label }}"
-                               class="form-control {% if form.commune.errors %}is-invalid{% endif %}"
-                               value="{{ form.commune.value|default:'' }}" required>
-                        {% if form.commune.errors %}<div class="invalid-feedback">{{ form.commune.errors|striptags }}</div>{% endif %}
+                        <label for="{{ form.wilaya.id_for_label }}" class="form-label">Wilaya</label>
+                        {{ form.wilaya }}
+                        <label for="{{ form.commune.id_for_label }}" class="form-label mt-2">Commune</label>
+                        {{ form.commune }}
+                        {% if form.commune.errors %}
+                            <div class="invalid-feedback d-block">{{ form.commune.errors|striptags }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="mb-3">

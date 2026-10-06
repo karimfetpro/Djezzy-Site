@@ -1,26 +1,71 @@
-{% extends 'comptes/base.html' %}
+{% extends "base.html" %}
 
-{% block title %}{% if boutique %}Modifier{% else %}Ajouter{% endif %} une boutique{% endblock %}
+{% block title %}{% if boutique %}Modifier{% else %}Ajouter{% endif %} une boutique — Djezzy Offres{% endblock %}
 
 {% block content %}
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="d-flex align-items-center mb-4">
-                <a href="{% url 'boutique_list' %}" class="btn btn-outline-secondary btn-sm me-3">← Retour</a>
-                <h1 class="h3 mb-0">{% if boutique %}Modifier{% else %}Ajouter{% endif %} une boutique</h1>
-            </div>
-            <div class="card card-djezzy">
-                <div class="card-body p-4">
+<div class="container">
+    <div class="row justify-content-center py-5">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+
+                    <h3 class="card-title fw-bold mb-1">
+                        {% if boutique %}Modifier la boutique{% else %}Ajouter une boutique{% endif %}
+                    </h3>
+                    <p class="text-muted mb-4">
+                        {% if boutique %}
+                            Mettez à jour les informations de « {{ boutique.name }} ».
+                        {% else %}
+                            Renseignez les informations de votre nouvelle boutique. Elle sera soumise à validation.
+                        {% endif %}
+                    </p>
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                    </div>
+                    {% endif %}
+
                     <form method="post">
                         {% csrf_token %}
-                        {{ form.as_p }}
-                        <div class="d-flex gap-2 mt-3">
-                            <button type="submit" class="btn btn-djezzy">Enregistrer</button>
+
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">Nom de la boutique</label>
+                            <input type="text" name="{{ form.name.html_name }}" id="{{ form.name.id_for_label }}"
+                                   class="form-control {% if form.name.errors %}is-invalid{% endif %}"
+                                   value="{{ form.name.value|default:'' }}" required>
+                            {% if form.name.errors %}<div class="invalid-feedback">{{ form.name.errors|striptags }}</div>{% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.wilaya.id_for_label }}" class="form-label">Wilaya</label>
+                            {{ form.wilaya }}
+                            <label for="{{ form.commune.id_for_label }}" class="form-label mt-2">Commune</label>
+                            {{ form.commune }}
+                            {% if form.commune.errors %}
+                                <div class="invalid-feedback d-block">{{ form.commune.errors|striptags }}</div>
+                            {% else %}
+                                <div class="form-text">Déterminera le stock disponible pour vos commandes.</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">Téléphone</label>
+                            <input type="text" name="{{ form.phone.html_name }}" id="{{ form.phone.id_for_label }}"
+                                   class="form-control {% if form.phone.errors %}is-invalid{% endif %}"
+                                   value="{{ form.phone.value|default:'' }}" placeholder="+213551234567">
+                            {% if form.phone.errors %}<div class="invalid-feedback">{{ form.phone.errors|striptags }}</div>{% endif %}
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-danger flex-grow-1">Enregistrer</button>
                             <a href="{% url 'boutique_list' %}" class="btn btn-outline-secondary">Annuler</a>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
