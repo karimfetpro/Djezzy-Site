@@ -16,7 +16,7 @@ class Boutique(models.Model):
 
     client = models.ForeignKey(Clients, on_delete=models.CASCADE, related_name='boutiques')
     name = models.CharField(max_length=150)
-    address = models.CharField(max_length=255)
+    wilaya = models.CharField(max_length=100, blank=True, null=True)
     commune = models.CharField(max_length=100, blank=True, null=True)
     phone = models.CharField(max_length=15, validators=[phone_validator], blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

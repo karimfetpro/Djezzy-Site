@@ -1,13 +1,12 @@
 from django import forms
 from catalogue.models import Categories, Offers, SubOffers, SubOfferQuota
-
+from algeria_data import algeria_communes, wilaya_algerie
 
 class CategorieForm(forms.ModelForm):
     class Meta:
         model = Categories
         fields = ['type']
         labels = {'type': "Nom de la catégorie"}
-
 
 class OfferForm(forms.ModelForm):
     class Meta:
@@ -19,9 +18,6 @@ class OfferForm(forms.ModelForm):
             'description': "Description",
             'image': "Image",
         }
-
-
-
 class SubOfferForm(forms.ModelForm):
     class Meta:
         model = SubOffers
@@ -34,12 +30,23 @@ class SubOfferForm(forms.ModelForm):
             'features': "Détails (JSON)",
         }
 
-
 class QuotaForm(forms.ModelForm):
+    wilaya = forms.ChoiceField(
+        choices=wilaya_algerie.WILAYA_CHOICES,
+        label="Wilaya",
+        widget=forms.Select(attrs={'class': 'form-select'}),
+    )
+    
+    commune = forms.ChoiceField(
+        choices=algeria_communes.COMMUNE_CHOICES,
+        label="Commune",
+        widget=forms.Select(attrs={'class': 'form-select'}),
+    )
     class Meta:
         model = SubOfferQuota
-        fields = ['commune', 'quota_total']
+        fields = ['wilaya', 'commune', 'quota_total']
         labels = {
+            'wilaya': "Wilaya",
             'commune': "Commune",
             'quota_total': "Stock total alloué",
         }
@@ -47,15 +54,6 @@ class QuotaForm(forms.ModelForm):
     def __init__(self, *args, sub_offer=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._sub_offer = sub_offer
-
-    def clean_commune(self):
-        commune = self.cleaned_data['commune']
-        qs = SubOfferQuota.objects.filter(sub_offer=self._sub_offer, commune__iexact=commune)
-        if self.instance.pk:
-            qs = qs.exclude(pk=self.instance.pk)
-        if qs.exists():
-            raise forms.ValidationError("Un quota existe déjà pour cette commune sur cette sous-offre.")
-        return commune
 
     def save(self, commit=True):
         self.instance.sub_offer = self._sub_offer
