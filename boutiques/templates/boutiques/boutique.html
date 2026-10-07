@@ -1,7 +1,5 @@
 {% extends "comptes/base.html" %}
 
-{% block title %}{% if boutique %}Modifier{% else %}Ajouter{% endif %} une boutique — Djezzy Offres{% endblock %}
-
 {% block content %}
 <div class="container">
     <div class="row justify-content-center py-5">
@@ -68,4 +66,43 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var wilayaSelect = document.getElementById('{{ form.wilaya.id_for_label }}');
+    var communeSelect = document.getElementById('{{ form.commune.id_for_label }}');
+
+    function filterCommunes() {
+        var selectedLabel = wilayaSelect.options[wilayaSelect.selectedIndex]
+            ? wilayaSelect.options[wilayaSelect.selectedIndex].text
+            : '';
+        var groups = communeSelect.getElementsByTagName('optgroup');
+        var hasVisibleSelected = false;
+
+        for (var i = 0; i < groups.length; i++) {
+            var match = groups[i].label === selectedLabel;
+            groups[i].style.display = match ? '' : 'none';
+            var opts = groups[i].getElementsByTagName('option');
+            for (var j = 0; j < opts.length; j++) {
+                opts[j].disabled = !match;
+                if (match && opts[j].selected) hasVisibleSelected = true;
+            }
+        }
+
+        if (!hasVisibleSelected) {
+            for (var i = 0; i < groups.length; i++) {
+                if (groups[i].label === selectedLabel) {
+                    var firstOpt = groups[i].getElementsByTagName('option')[0];
+                    if (firstOpt) firstOpt.selected = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    wilayaSelect.addEventListener('change', filterCommunes);
+    filterCommunes();
+});
+</script>
+
 {% endblock %}
