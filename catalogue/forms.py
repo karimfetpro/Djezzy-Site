@@ -1,6 +1,7 @@
 from django import forms
 from catalogue.models import Categories, Offers, SubOffers, SubOfferQuota
-from algeria_data import algeria_communes, wilaya_algerie
+from algeria_data import wilaya_algerie
+from algeria_data import algeria_communes
 
 class CategorieForm(forms.ModelForm):
     class Meta:

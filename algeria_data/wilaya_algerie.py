@@ -5,6 +5,9 @@ django.forms.ChoiceField : [(code, nom_affiché), ...].
 Source : https://github.com/othmanus/algeria-cities
 """
 
+from algeria_data.algeria_communes import COMMUNE_CHOICES
+
+
 WILAYA_CHOICES = [
     ('01', 'Adrar (01)'),
     ('16', 'Alger (16)'),
@@ -65,3 +68,4 @@ WILAYA_CHOICES = [
     ('55', 'Touggourt (55)'),
     ('12', 'Tébessa (12)'),
 ]
+ALL_WILAYAS = sorted({w for _, wilaya in WILAYA_CHOICES for w, c in COMMUNE_CHOICES if c == wilaya})
