@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
+from django.views.decorators.http import require_POST
 
 from boutiques.models import Boutique
 from boutiques.forms import BoutiqueForm
@@ -64,6 +65,7 @@ def boutique_pending_list(request):
     return render(request, 'boutiques/boutique_pending_list.html', {'boutiques': boutiques})
 
 @login_required
+@require_POST
 def accept_boutique(request, pk):
     commercial = Commercials.objects.filter(user=request.user).first()
     if commercial:
@@ -76,6 +78,7 @@ def accept_boutique(request, pk):
     return redirect('boutique_pending_list')
 
 @login_required
+@require_POST
 def refuse_boutique(request, pk):
     commercial = Commercials.objects.filter(user=request.user).first()
     if commercial:

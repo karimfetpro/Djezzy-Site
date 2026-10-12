@@ -7,7 +7,6 @@ Source : https://github.com/othmanus/algeria-cities
 
 from algeria_data.algeria_communes import COMMUNE_CHOICES
 
-
 WILAYA_CHOICES = [
     ('01', 'Adrar (01)'),
     ('16', 'Alger (16)'),
