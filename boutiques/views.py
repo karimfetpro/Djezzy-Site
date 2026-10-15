@@ -14,8 +14,6 @@ def boutique_create(request):
         if form.is_valid():
             boutique = form.save(commit=False)
             boutique.client = request.user.client_profile
-            # ⚠️ plus besoin de fixer statut à la main : Boutique.Statut.EN_ATTENTE
-            # est déjà la valeur par défaut du modèle.
             boutique.save()
             messages.success(request, "Boutique ajoutée avec succès.")
             return redirect('boutique_list')
